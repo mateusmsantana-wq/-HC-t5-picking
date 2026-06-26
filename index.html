@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Oswald',Arial,sans-serif;}
+body{background:#f4f6f9;padding:18px;font-size:17px;}
+h1{font-size:28px;font-weight:700;color:#1a2235;margin-bottom:6px;letter-spacing:.02em;}
+.subtitle{font-size:15px;color:#6b7280;margin-bottom:18px;font-weight:400;}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+.kpi{background:#fff;border-radius:10px;padding:18px 20px;border-left:5px solid #3b82f6;}
+.kpi.green{border-left-color:#10b981;}
+.kpi.purple{border-left-color:#8b5cf6;}
+.kpi-label{font-size:14px;color:#6b7280;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;font-weight:400;}
+.kpi-val{font-size:52px;font-weight:700;color:#1a2235;line-height:1.1;letter-spacing:.01em;}
+.kpi-sub{font-size:14px;color:#9ca3af;margin-top:4px;font-weight:400;}
+.panel{background:#fff;border-radius:10px;padding:20px;margin-bottom:14px;}
+.panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.panel-title{font-size:20px;font-weight:700;color:#1a2235;letter-spacing:.03em;}
+.badge{font-size:14px;padding:4px 14px;border-radius:20px;font-weight:700;}
+.badge-blue{background:#dbeafe;color:#1d4ed8;}
+.badge-green{background:#d1fae5;color:#065f46;}
+table{width:100%;border-collapse:collapse;font-size:17px;}
+th{text-align:left;color:#9ca3af;font-weight:400;padding:8px 0;border-bottom:1px solid #f3f4f6;font-size:15px;letter-spacing:.05em;}
+th.c,td.c{text-align:center;}
+td{padding:10px 0;border-bottom:1px solid #f9fafb;color:#374151;font-weight:400;}
+tr.total-row td{font-weight:700;font-size:20px;color:#1a2235;border-top:2px solid #e5e7eb;border-bottom:none;padding-top:12px;letter-spacing:.02em;}
+input[type=number]{width:85px;text-align:center;border:1px solid #e5e7eb;border-radius:5px;padding:6px 4px;font-size:17px;font-family:'Oswald',Arial,sans-serif;font-weight:700;color:#1a2235;background:#f9fafb;}
+input[type=number]:focus{outline:none;border-color:#3b82f6;background:#fff;}
+.formula{font-size:13px;color:#9ca3af;margin-top:8px;padding-top:8px;border-top:1px solid #f3f4f6;font-weight:400;}
+.obs-wrap{display:flex;gap:8px;align-items:center;margin-top:10px;}
+.obs-input{flex:1;border:1px solid #e5e7eb;border-radius:5px;padding:7px 10px;font-size:15px;font-family:'Oswald',Arial,sans-serif;color:#1a2235;background:#eff6ff;}
+.obs-label{font-size:15px;color:#1e40af;font-weight:700;white-space:nowrap;}
+.tl-panel{background:#fff;border-radius:10px;padding:20px;margin-bottom:14px;}
+.tl-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.tl-title{font-size:20px;font-weight:700;color:#1a2235;letter-spacing:.03em;}
+.tl-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+.tl-card{background:#f9fafb;border-radius:8px;padding:14px 8px;text-align:center;}
+.tl-name{font-size:15px;color:#6b7280;margin-bottom:4px;font-weight:400;letter-spacing:.05em;text-transform:uppercase;}
+.tl-val{font-size:34px;font-weight:700;color:#1a2235;width:100%;border:none;background:transparent;text-align:center;font-family:'Oswald',Arial,sans-serif;}
+.tl-val:focus{outline:none;}
+.bar-bg{height:5px;background:#e5e7eb;border-radius:2px;margin-top:6px;}
+.bar-fg{height:5px;border-radius:2px;background:#3b82f6;}
+.tl-total-line{font-size:15px;color:#6b7280;text-align:right;}
+.tl-total-line span{font-weight:700;color:#1a2235;}
+.btn-salvar{width:100%;background:#1d4ed8;color:#fff;border:none;border-radius:8px;padding:15px;font-size:18px;font-weight:700;font-family:'Oswald',Arial,sans-serif;letter-spacing:.05em;cursor:pointer;margin-top:6px;}
+.btn-salvar:hover{background:#1e40af;}
+.btn-limpar{width:100%;background:#f3f4f6;color:#374151;border:none;border-radius:8px;padding:11px;font-size:15px;font-family:'Oswald',Arial,sans-serif;cursor:pointer;margin-top:8px;}
+.btn-limpar:hover{background:#e5e7eb;}
+.success-msg{display:none;background:#d1fae5;color:#065f46;border-radius:6px;padding:10px;text-align:center;font-size:15px;margin-top:8px;font-weight:700;}
+</style>
+</head>
+<body>
+
+<h1>📦 HC T5 — Picking</h1>
+<p class="subtitle">Calculadora de Headcount · Fórmula: Representantes − Sinergias</p>
+
+
+
+<!-- PICKING START -->
+<div class="panel">
+  <div class="panel-head">
+    <span class="panel-title">☀️ Picking Start</span>
+    <span class="badge badge-blue">T5</span>
+  </div>
+  <table>
+    <tr><th>Função</th><th class="c">Planejado Flow</th><th class="c">Real Picking</th></tr>
+    <tr><td>Representantes</td><td class="c"><input type="number" id="s-rep-p" value="0" min="0" oninput="calc()"></td><td class="c"><input type="number" id="s-rep-r" value="0" min="0" oninput="calc()"></td></tr>
+    <tr><td>Multiplicando</td><td class="c"><input type="number" id="s-mul-p" value="0" min="0" oninput="calc()"></td><td class="c"><input type="number" id="s-mul-r" value="0" min="0" oninput="calc()"></td></tr>
+    <tr><td>TLS</td><td class="c"><input type="number" id="s-tls-p" value="0" min="0" oninput="calc()"></td><td class="c"><input type="number" id="s-tls-r" value="0" min="0" oninput="calc()"></td></tr>
+    <tr><td>Sinergias</td><td class="c"><input type="number" id="s-sin-p" value="0" min="0" oninput="calc()"></td><td class="c"><input type="number" id="s-sin-r" value="0" min="0" oninput="calc()"></td></tr>
+    <tr><td>Indiretos</td><td class="c"><input type="number" id="s-ind-p" value="0" min="0" oninput="calc()"></td><td class="c"><input type="number" id="s-ind-r" value="0" min="0" oninput="calc()"></td></tr>
+    <tr class="total-row"><td>HC Ativo</td><td class="c">—</td><td class="c" style="color:#3b82f6;" id="s-tot-r">0</td></tr>
+  </table>
+  <div class="formula">HC Ativo = Representantes Real − Sinergias Real</div>
+  <div class="obs-wrap">
+    <span class="obs-label">OBS:</span>
+    <input type="text" id="obs-start" placeholder="Observações do turno..." class="obs-input">
+  </div>
+</div>
+
+<!-- CABEÇALHO PÓS JANTA -->
+<h1 style="margin-top:24px;">📦 HC T5 — Picking Pós Janta</h1>
+<p class="subtitle">Calculadora de Headcount · Fórmula: Representantes − Sinergias</p>
+
+<!-- PÓS JANTA -->
+<div class="panel">
+  <div class="panel-head">
+    <span class="panel-title">🌙 Picking Pós Janta</span>
+    <span class="badge badge-green">T5</span>
+  </div>
+  <table>
+    <tr><th>Função</th><th class="c">Planejado Flow</th><th class="c">Real Picking</th></tr>
+    <tr><td>Representantes</td><td class="c"><input type="number" id="p-rep-p" value="0" min="0" oninput="calc()"></td><td class="c"><input type="number" id="p-rep-r" value="0" min="0" oninput="calc()"></td></tr>
+    <tr><td>Multiplicando</td><td class="c"><input type="number" id="p-mul-p" value="0" min="0" oninput="calc()"></td><td class="c"><input type="number" id="p-mul-r" value="0" min="0" oninput="calc()"></td></tr>
+    <tr><td>TLS</td><td class="c"><input type="number" id="p-tls-p" value="0" min="0" oninput="calc()"></td><td class="c"><input type="number" id="p-tls-r" value="0" min="0" oninput="calc()"></td></tr>
+    <tr><td>Sinergias</td><td class="c"><input type="number" id="p-sin-p" value="0" min="0" oninput="calc()"></td><td class="c"><input type="number" id="p-sin-r" value="0" min="0" oninput="calc()"></td></tr>
+    <tr><td>Indiretos</td><td class="c"><input type="number" id="p-ind-p" value="0" min="0" oninput="calc()"></td><td class="c"><input type="number" id="p-ind-r" value="0" min="0" oninput="calc()"></td></tr>
+    <tr class="total-row"><td>HC Ativo</td><td class="c">—</td><td class="c" style="color:#10b981;" id="p-tot-r">0</td></tr>
+  </table>
+  <div class="formula">HC Ativo = Representantes Real − Sinergias Real</div>
+  <div class="obs-wrap">
+    <span class="obs-label">OBS:</span>
+    <input type="text" id="obs-posjanta" placeholder="Observações do turno..." class="obs-input">
+  </div>
+</div>
+
+<!-- TLs -->
+<div class="tl-panel">
+  <div class="tl-head">
+    <span class="tl-title">👥 Distribuição de Reps por TL</span>
+    <span class="tl-total-line">Total: <span id="tl-total">0</span></span>
+  </div>
+  <div class="tl-grid">
+    <div class="tl-card"><div class="tl-name">Mariana</div><input class="tl-val" type="number" id="tl0" value="0" min="0" oninput="calcTL()"><div class="bar-bg"><div class="bar-fg" id="bar0" style="width:0%"></div></div></div>
+    <div class="tl-card"><div class="tl-name">Silvano</div><input class="tl-val" type="number" id="tl1" value="0" min="0" oninput="calcTL()"><div class="bar-bg"><div class="bar-fg" id="bar1" style="width:0%"></div></div></div>
+    <div class="tl-card"><div class="tl-name">Dioneia</div><input class="tl-val" type="number" id="tl2" value="0" min="0" oninput="calcTL()"><div class="bar-bg"><div class="bar-fg" id="bar2" style="width:0%"></div></div></div>
+    <div class="tl-card"><div class="tl-name">Jessica</div><input class="tl-val" type="number" id="tl3" value="0" min="0" oninput="calcTL()"><div class="bar-bg"><div class="bar-fg" id="bar3" style="width:0%"></div></div></div>
+    <div class="tl-card"><div class="tl-name">Mateus</div><input class="tl-val" type="number" id="tl4" value="0" min="0" oninput="calcTL()"><div class="bar-bg"><div class="bar-fg" id="bar4" style="width:0%"></div></div></div>
+  </div>
+</div>
+
+<!-- BOTÕES -->
+
+<button class="btn-limpar" onclick="limparTudo()">🗑️ Limpar todos os campos</button>
+<div class="success-msg" id="msg-ok">✅ Dados salvos na aba PLANO com sucesso!</div>
+
+<script>
+function g(id){return parseInt(document.getElementById(id).value)||0;}
+function s(id,v){document.getElementById(id).textContent=v;}
+
+function calc(){
+  var sRepR=g('s-rep-r'),sSinR=g('s-sin-r');
+  var sRepP=g('s-rep-p'),sSinP=g('s-sin-p');
+  var sTotR=Math.max(0,sRepR-sSinR);
+  var sTotP=Math.max(0,sRepP-sSinP);
+  s('s-tot-r',sTotR);
+
+  var pRepR=g('p-rep-r'),pSinR=g('p-sin-r');
+  var pRepP=g('p-rep-p'),pSinP=g('p-sin-p');
+  var pTotR=Math.max(0,pRepR-pSinR);
+  var pTotP=Math.max(0,pRepP-pSinP);
+  s('p-tot-r',pTotR);
+
+  s('kpi1',sRepR);
+  document.getElementById('kpi1-sub').textContent='Total bruto: '+sRepR+' reps';
+  s('kpi2',pTotR);
+  document.getElementById('kpi2-sub').textContent=pRepR+' − '+pSinR+' = '+pTotR;
+  updateKpi3();
+}
+
+function calcTL(){
+  var ids=['tl0','tl1','tl2','tl3','tl4'];
+  var vals=ids.map(function(id){return g(id);});
+  var total=vals.reduce(function(a,b){return a+b;},0);
+  s('tl-total',total);
+  var mx=Math.max.apply(null,vals.concat([1]));
+  ids.forEach(function(id,i){
+    document.getElementById('bar'+i).style.width=Math.round(vals[i]/mx*100)+'%';
+  });
+  // Alimenta automaticamente o Real Picking de Representantes do Start e Pós Janta
+  document.getElementById('s-rep-r').value = total;
+  document.getElementById('p-rep-r').value = total;
+  calc();
+}
+
+function updateKpi3(){
+  var sRepR=g('s-rep-r'), sSinR=g('s-sin-r');
+  var pRepR=g('p-rep-r'), pSinR=g('p-sin-r');
+  var total=Math.max(0,sRepR-sSinR)+Math.max(0,pRepR-pSinR);
+  s('kpi3', total);
+}
+
+function limparTudo(){
+  var campos=['s-rep-p','s-rep-r','s-mul-p','s-mul-r','s-tls-p','s-tls-r','s-sin-p','s-sin-r','s-ind-p','s-ind-r',
+              'p-rep-p','p-rep-r','p-mul-p','p-mul-r','p-tls-p','p-tls-r','p-sin-p','p-sin-r','p-ind-p','p-ind-r',
+              'tl0','tl1','tl2','tl3','tl4'];
+  campos.forEach(function(id){ document.getElementById(id).value=0; });
+  document.getElementById('obs-start').value='';
+  document.getElementById('obs-posjanta').value='';
+  calc(); calcTL();
+}
+
+function salvarNaAba(){
+  var dados = {
+    s_rep_p: g('s-rep-p'), s_rep_r: g('s-rep-r'),
+    s_mul_p: g('s-mul-p'), s_mul_r: g('s-mul-r'),
+    s_tls_p: g('s-tls-p'), s_tls_r: g('s-tls-r'),
+    s_sin_p: g('s-sin-p'), s_sin_r: g('s-sin-r'),
+    s_ind_p: g('s-ind-p'), s_ind_r: g('s-ind-r'),
+    p_rep_p: g('p-rep-p'), p_rep_r: g('p-rep-r'),
+    p_mul_p: g('p-mul-p'), p_mul_r: g('p-mul-r'),
+    p_tls_p: g('p-tls-p'), p_tls_r: g('p-tls-r'),
+    p_sin_p: g('p-sin-p'), p_sin_r: g('p-sin-r'),
+    p_ind_p: g('p-ind-p'), p_ind_r: g('p-ind-r'),
+    tl0: g('tl0'), tl1: g('tl1'), tl2: g('tl2'), tl3: g('tl3'), tl4: g('tl4'),
+    obs_start: document.getElementById('obs-start').value,
+    obs_posjanta: document.getElementById('obs-posjanta').value
+  };
+  // Versão web: salvar localmente não disponível
+  var msg = document.getElementById('msg-ok');
+  msg.style.display='block';
+  msg.textContent = '✅ Dados registrados! Para salvar histórico, use a versão Google Sheets.';
+  setTimeout(function(){ msg.style.display='none'; }, 4000);
+}
+
+calc(); calcTL();
+</script>
+</body>
+</html>
